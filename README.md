@@ -1,6 +1,6 @@
 # simplifyEnrichment_manuscript
 
-Scripts for the analysis in simplifyEnrichment manuscript:
+Scripts for the analysis in [simplifyEnrichment](https://github.com/jokergoo/simplifyEnrichment) manuscript:
 
 - `collect_sim_mat.R`: It performes gene set enrichment analysis on [EBI Expression Atlas datasets](https://www.ebi.ac.uk/gxa/download) with various ontologies. It also calculates similarity matrices with different measurements on the significant terms.
 - `run_example_random_GO.R`: It runs various clustering methods on the similarity matrices that were generated from random GO terms.
