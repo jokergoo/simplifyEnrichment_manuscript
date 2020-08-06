@@ -8,3 +8,6 @@ Scripts for the analysis in simplifyEnrichment manuscript:
 - `compare_semantic_and_overlap.R`: It compares clusterings from different similarity measurements, i.e., semantic similarity and gene overlap similarities.
 - `test_partition_methods.R`: It tests the effect of partitionning methods in the binary cut clustering with rando GO datasets.
 - `website.R`: It deploys all the results to GitHub Page.
+
+
+Many analysis in the scripts were sent to the computing cluster with [the bsub package](https://github.com/jokergoo/bsub).
