@@ -127,7 +127,7 @@ in each iteration step, the current matrix is partitioned into two groups using 
 Here we compare following partitioning methds: k-means, PAM and hierarchical clustering with 
 methods of 'complete', 'average' and 'ward.D2', on 500 random GO lists.</p>
 
-<p><b>Figure 1.</b>Compare clustering results. Left panel: The difference score, number of clusters and the block mean of different clusterings. Right panel: Concordance between clustering methods. The concordance measures how similar two clusterings are.</p>
+<p><b>Figure 1.</b>Compare clustering results. Left panel: The difference score, number of clusters and the block mean of different clusterings. Right panel: Concordance between clustering methods. The concordance measures how similar two clusterings are. The definition of the concordance score can be found <a href='/concordance.html'>here</a>.</p>
 <p><img src='test_partition_methods_results.png' width='800' /></p>
 <p><b>Table 1.</b>Number of clusters identified by each clustering method. Numbers in the table indicate the number of clusters. The numbers inside the parentheses are the number of clusters with size >= 5. </p>
 @{knitr::kable(m, row.names = FALSE, format = 'html', escape = FALSE)}

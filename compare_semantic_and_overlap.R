@@ -160,7 +160,7 @@ writeLines(qq("
 <body>
 <h1>Compare similarity measurements - random_BP</h1>
 <hr />
-<p><b>Figure 1.</b> Left) Numbers of gene sets. Middle) Average number of terms per cluster. Right) Concordance of clusterings from different similarity matrices.</p>
+<p><b>Figure 1.</b> Left) Numbers of gene sets. Middle) Average number of terms per cluster. Right) Concordance of clusterings from different similarity matrices. The definition of the concordance score can be found <a href='/concordance.html'>here</a>.</p>
 <p><img src='random_BP_compare_similarity.png' width='900' /></p>
 <br>
 <p><b>Table 1.</b> Details on individual datasets.</p>
@@ -363,7 +363,7 @@ compare = function(ont) {
 	<body>
 	<h1>Compare similarity measurements - EBI_Expression_Atlas_@{ont}</h1>
 	<hr />
-	<p><b>Figure 1.</b> Left) Numbers of gene sets. Middle) Average number of terms per cluster. Right) Concordance of clusterings from different similarity matrices.</p>
+	<p><b>Figure 1.</b> Left) Numbers of gene sets. Middle) Average number of terms per cluster. Right) Concordance of clusterings from different similarity matrices. The definition of the concordance score can be found <a href='/concordance.html'>here</a>.</p>
 	<p><img src='EBI_Expression_Atlas_@{ont}_compare_similarity.png' width='900' /></p>
 	<br>
 	<p><b>Table 1.</b> Details on individual datasets.</p>
