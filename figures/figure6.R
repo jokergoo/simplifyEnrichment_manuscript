@@ -132,7 +132,9 @@ lgd_list = c(
 df = do.call(rbind, lapply(n_set_list, function(x) data.frame(x = x, cate = names(x))))
 df$cate = factor(df$cate, levels = c("semantic", "jaccard", "dice", "overlap", "kappa"))
 p11 = ggplot(df, aes(x = x, fill = cate)) + geom_histogram() + facet_grid(~cate) + theme(legend.position = "none") +
-	labs(x = "Numbers of clusters", y = "Counts") + ggtitle("K) Number of clusters, on Expression Atlas datasets")
+	labs(x = "Numbers of clusters", y = "Counts") + 
+	scale_x_continuous(breaks = c(1, 50, 100, 150, 200)) +
+	ggtitle("K) Number of clusters, on Expression Atlas datasets")
 
 df = do.call(rbind, lapply(max_cluster_prop_list, function(x) data.frame(x = x, cate = names(x))))
 df$cate = factor(df$cate, levels = c("semantic", "jaccard", "dice", "overlap", "kappa"))
