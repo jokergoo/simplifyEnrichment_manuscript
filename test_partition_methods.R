@@ -12,7 +12,8 @@ bsub_opt$temp_dir = "/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/bsub_temp"
 bsub_opt$enforce = TRUE
 
 for(i in 1:100) {
-bsub_chunk(name = qq("test_partition_methods_@{i}"), variables = c("i"), memory = 3, hour = 5,
+seed = round(runif(1)*2^30)	
+bsub_chunk(name = qq("test_partition_methods_@{i}"), variables = c("i", "seed"), memory = 3, hour = 0.8,
 {
 
 	library(GetoptLong)
@@ -21,13 +22,14 @@ bsub_chunk(name = qq("test_partition_methods_@{i}"), variables = c("i"), memory 
 
 	library(simplifyEnrichment)
 
+	set.seed(seed)
+	qqcat("random seed: @{seed}\n")
+
 	remove_clustering_methods(all_clustering_methods())
 	register_clustering_methods(
-		partition_by_kmeans = function(mat, ...) binary_cut(mat, partition_fun = simplifyEnrichment:::partition_by_kmeans),
-		partition_by_pam = function(mat, ...) binary_cut(mat, partition_fun = simplifyEnrichment:::partition_by_pam),
-		partition_by_hclust_complete = function(mat, ...) binary_cut(mat, partition_fun = function(mat, k) cutree(hclust(dist(mat), method = "complete"), k)),
-		partition_by_hclust_ward.D2 = function(mat, ...) binary_cut(mat, partition_fun = function(mat, k) cutree(hclust(dist(mat), method = "ward.D2"), k)),
-		partition_by_hclust_average = function(mat, ...) binary_cut(mat, partition_fun = function(mat, k) cutree(hclust(dist(mat), method = "average"), k))
+		partition_by_pam = function(mat, ...) binary_cut(mat, partition_fun = partition_by_pam),
+		partition_by_kmeanspp = function(mat, ...) binary_cut(mat, partition_fun = partition_by_kmeanspp),
+		partition_by_hclust = function(mat, ...) binary_cut(mat, partition_fun = partition_by_hclust)
 	)
 
 	qqcat("====== random @{i} ========\n")
@@ -36,15 +38,15 @@ bsub_chunk(name = qq("test_partition_methods_@{i}"), variables = c("i"), memory 
 
 	clt = cmp_make_clusters(mat, method = all_clustering_methods())
 
-	jpeg(qq("image/clt_test_partition_methods_@{i}.jpg"), width = 1200, height = 800)
-	cmp_make_plot(mat, clt, nrow = 2, plot_type = "heatmap")
+	jpeg(qq("image/clt_test_partition_methods_@{i}.jpg"), width = 1200, height = 300)
+	cmp_make_plot(mat, clt, nrow = 1, plot_type = "heatmap")
 	dev.off()
 
 	png(qq("image/clt_test_partition_methods_@{i}_barplot.png"), width = 800*2, height = 600*2, res = 72*2)
 	cmp_make_plot(mat, clt)
 	dev.off()
 
-	saveRDS(list(mat, clt), file = qq("rds/clt_test_partition_methods_@{i}.rds"))
+	saveRDS(list(mat, clt, seed), file = qq("rds/clt_test_partition_methods_@{i}.rds"))
 
 	cat("done.\n")
 })
@@ -62,11 +64,9 @@ servr::httd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/")
 
 remove_clustering_methods(all_clustering_methods())
 register_clustering_methods(
-	partition_by_kmeans = function(mat, ...) binary_cut(mat, partition_fun = simplifyEnrichment:::partition_by_kmeans),
-	partition_by_pam = function(mat, ...) binary_cut(mat, partition_fun = simplifyEnrichment:::partition_by_pam),
-	partition_by_hclust_complete = function(mat, ...) binary_cut(mat, partition_fun = function(mat, k) cutree(hclust(dist(mat), method = "complete"), k)),
-	partition_by_hclust_ward.D2 = function(mat, ...) binary_cut(mat, partition_fun = function(mat, k) cutree(hclust(dist(mat), method = "ward.D2"), k)),
-	partition_by_hclust_average = function(mat, ...) binary_cut(mat, partition_fun = function(mat, k) cutree(hclust(dist(mat), method = "average"), k))
+	partition_by_pam = function(mat, ...) binary_cut(mat, partition_fun = partition_by_pam),
+	partition_by_kmeanspp = function(mat, ...) binary_cut(mat, partition_fun = partition_by_kmeanspp),
+	partition_by_hclust = function(mat, ...) binary_cut(mat, partition_fun = partition_by_hclust)
 )
 
 summarize("rds/clt_test_partition_methods_@{i}.rds", 100, output = "test_partition_methods_results.rds", rerun = TRUE)
@@ -112,6 +112,7 @@ for(i in 1:100) {
 m = cbind(run = 1:100, m)
 m = cbind(m, "Details" = qq("<a href='image/clt_test_partition_methods_@{1:100}.html'>view</a>", collapse = FALSE))
 
+
 # the main page
 writeLines(qq("
 <html>
@@ -124,8 +125,8 @@ writeLines(qq("
 <hr>
 <p>In the process of recursively splitting the similarity matrix in binary cut algorithm, 
 in each iteration step, the current matrix is partitioned into two groups using PAM as default. 
-Here we compare following partitioning methds: k-means, PAM and hierarchical clustering with 
-methods of 'complete', 'average' and 'ward.D2', on 500 random GO lists.</p>
+Here we compare following partitioning methds: k-means++, PAM and hierarchical clustering with 
+'ward.D2' method, on 500 random GO lists.</p>
 
 <p><b>Figure 1.</b>Compare clustering results. Left panel: The difference score, number of clusters and the block mean of different clusterings. Right panel: Concordance between clustering methods. The concordance measures how similar two clusterings are. The definition of the concordance score can be found <a href='/concordance.html'>here</a>.</p>
 <p><img src='test_partition_methods_results.png' width='800' /></p>

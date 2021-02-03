@@ -1,0 +1,37 @@
+setwd("~/manuscript/simplifyEnrichment")
+
+library(simplifyEnrichment)
+library(circlize)
+library(ComplexHeatmap)
+set.seed(888)
+go_id = random_GO(500)
+mat = GO_similarity(go_id)
+col_fun = colorRamp2(c(0, 1), c("white", "red"))
+dend = simplifyEnrichment:::cluster_mat(mat)
+
+p1 = grid.grabExpr(plot_binary_cut(mat, dend = dend, depth = 1, dend_width = unit(1, "cm"), show_heatmap_legend = FALSE))
+p2 = grid.grabExpr(plot_binary_cut(mat, dend = dend, depth = 2, dend_width = unit(1, "cm"), show_heatmap_legend = FALSE))
+p3 = grid.grabExpr(plot_binary_cut(mat, dend = dend, depth = 3, dend_width = unit(1, "cm"), show_heatmap_legend = FALSE))
+p4 = grid.grabExpr(plot_binary_cut(mat, dend = dend, dend_width = unit(4, "cm")))
+
+y = 0.6
+pdf("figure2.pdf", width = 7.25, height = 6)
+pushViewport(viewport(x = 0, y = y, width = unit(1/3, "npc"), height = unit(1-y, "npc") - unit(5, "mm"), just = c("left", "bottom")))
+grid.draw(p1)
+grid.text("A) Depth = 1", x = 0.5, y = 1, gp = gpar(fontsize = 12), just = "bottom")
+popViewport()
+pushViewport(viewport(x = 1/3, y = y, width = unit(1/3, "npc"), height = unit(1-y, "npc") - unit(5, "mm"), just = c("left", "bottom")))
+grid.draw(p2)
+grid.text("B) Depth = 2", x = 1/2, y = 1, gp = gpar(fontsize = 12), just = "bottom")
+popViewport()
+pushViewport(viewport(x = 2/3, y = y, width = unit(1/3, "npc"), height = unit(1-y, "npc") - unit(5, "mm"), just = c("left", "bottom")))
+grid.draw(p3)
+grid.text("C) Depth = 3", x = 1/2, y = 1, gp = gpar(fontsize = 12), just = "bottom")
+popViewport()
+
+pushViewport(viewport(x = 0.5, y = 0, width = 0.8, height = unit(y, "npc") - unit(5, "mm"), just = c("bottom")))
+grid.draw(p4)
+grid.text("D) Complete dendrogram with nodes split", x = 1/2, y = 1, gp = gpar(fontsize = 12), just = "bottom")
+popViewport()
+dev.off()
+

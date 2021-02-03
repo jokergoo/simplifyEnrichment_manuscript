@@ -22,7 +22,7 @@ submit_EBI_Expression_Atlas = function(sim, onto) {
 	for(i in seq_len(n)) {
 		# if(i > 10) break
 		mat = as.matrix(sim[[i]])
-		bsub_chunk(name = qq("Expression_Atlas_@{onto}_@{i}"), variables = c("i", "mat", "n", "nm", "onto"), hour = 5, memory = 3,
+		bsub_chunk(name = qq("Expression_Atlas_@{onto}_@{i}"), variables = c("i", "mat", "n", "nm", "onto"), hour = ifelse(nrow(mat) < 500, 0.8, 4), memory = 3,
 		{	
 			library(GetoptLong)
 
@@ -58,7 +58,7 @@ submit_EBI_Expression_Atlas = function(sim, onto) {
 			dev.off()
 
 			cat("done.\n")
-		}, output_dir = bsub_opt$output_dir, temp_dir = bsub_opt$temp_dir, enforce = FALSE)
+		}, output_dir = bsub_opt$output_dir, temp_dir = bsub_opt$temp_dir)
 	}
 }
 

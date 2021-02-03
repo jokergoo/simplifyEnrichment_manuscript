@@ -9,10 +9,11 @@ bsub_opt$temp_dir = "/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/bsub_temp"
 
 ######################## random GO ###################
 
-bsub_opt$enforce = TRUE
+bsub_opt$enforce = FALSE
 for(ont in c("BP", "MF", "CC")) {
 	for(i in 1:100) {
-	bsub_chunk(name = qq("random_@{ont}_@{i}"), variables = c("i", "ont"), memory = 3, hour = 5,
+	seed = round(runif(1)*2^30)
+	bsub_chunk(name = qq("random_@{ont}_@{i}"), variables = c("i", "ont", "seed"), memory = 3, hour = ifelse(ont == "BP", 3, 0.5),
 	{
 
 		library(GetoptLong)
@@ -20,6 +21,9 @@ for(ont in c("BP", "MF", "CC")) {
 	    setwd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/examples")
 
 		library(simplifyEnrichment)
+
+		set.seed(seed)
+		qqcat("random seed: @{seed}\n")
 
 		qqcat("====== random GO_@{ont} @{i} ========\n")
 		go_id = random_GO(500, ont = ont)
@@ -42,7 +46,7 @@ for(ont in c("BP", "MF", "CC")) {
 		select_cutoff(mat)
 		dev.off()
 
-		saveRDS(list(mat, clt), file = qq("random_@{ont}/rds/clt_random_@{ont}_@{i}.rds"))
+		saveRDS(list(mat, clt, seed), file = qq("random_@{ont}/rds/clt_random_@{ont}_@{i}.rds"))
 
 		if(ont == "BP") {
 			GO_DATA = clusterProfiler:::get_GO_data("org.Hs.eg.db", ont, "ENTREZID")
@@ -66,7 +70,7 @@ for(ont in c("BP", "MF", "CC")) {
 				select_cutoff(mat)
 				dev.off()
 
-				saveRDS(list(mat, clt), file = qq("random_@{ont}_@{method}/rds/clt_random_@{ont}_@{method}_@{i}.rds"))
+				saveRDS(list(mat, clt, seed), file = qq("random_@{ont}_@{method}/rds/clt_random_@{ont}_@{method}_@{i}.rds"))
 			}
 		}
 
@@ -93,6 +97,7 @@ for(ont in c("BP", "MF", "CC")) {
 
 setwd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/examples")
 
+## generate HTML page for every dataset
 for(ont in c("BP", "MF", "CC")) {
 	for(method in c("", "jaccard", "kappa", "dice", "overlap")) {
 
@@ -171,7 +176,7 @@ for(ont in c("BP", "MF", "CC")) {
 	}
 }
 
-
+## generate the main figures
 ont = "BP"
 for(method in c("", "jaccard", "kappa", "dice", "overlap")) {
 
