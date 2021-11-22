@@ -1,4 +1,4 @@
-setwd("~/manuscript/simplifyEnrichment")
+setwd("~/manuscript/simplifyEnrichment/figures")
 
 library(simplifyEnrichment)
 

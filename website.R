@@ -44,7 +44,7 @@ create_repo = function(repo, dir, ignore = c("rds", "rds/", "^.*", "Rplots.pdf")
 		setwd(dir)
 
 		system("git init")
-		cat(ignore, sep = "\n", file = ".gitignore")
+		cat(c(ignore, "core*"), sep = "\n", file = ".gitignore")
 		system("git add .gitignore")
 		system("git commit -m 'add .gitignore'")
 
@@ -86,40 +86,44 @@ sub_dirs = function(dir, pattern = NULL) {
 	files[file.info(files)$isdir]
 }
 
-dir = sub_dirs("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/examples")
+dir = sub_dirs("/omics/groups/OE0246/internal/guz/simplifyGO_test/examples")
 
 for(repo in dir) {
-	create_repo(repo, qq("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/examples/@{repo}"))
+	try(delete_repo(repo, qq("/omics/groups/OE0246/internal/guz/simplifyGO_test/examples/@{repo}")))
 }
 
-##### push
 for(repo in dir) {
-	update_repo(repo, qq("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/examples/@{repo}"))
+	create_repo(repo, qq("/omics/groups/OE0246/internal/guz/simplifyGO_test/examples/@{repo}"))
+	update_repo(repo, qq("/omics/groups/OE0246/internal/guz/simplifyGO_test/examples/@{repo}"))
 }
+
 
 ################### similarity comparisons ###################
-dir = sub_dirs("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/compare_similarity")
+dir = sub_dirs("/omics/groups/OE0246/internal/guz/simplifyGO_test/compare_similarity")
 dir = setdiff(dir, "rds")
 
+
 for(repo in dir) {
-	create_repo(qq("cmp_sim_@{repo}"), qq("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/compare_similarity/@{repo}"))
+	delete_repo(qq("cmp_sim_@{repo}"), qq("/omics/groups/OE0246/internal/guz/simplifyGO_test/compare_similarity/@{repo}"))
 }
 
-##### push
 for(repo in dir) {
-	update_repo(qq("cmp_sim_@{repo}"), qq("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/compare_similarity/@{repo}"))
+	create_repo(qq("cmp_sim_@{repo}"), qq("/omics/groups/OE0246/internal/guz/simplifyGO_test/compare_similarity/@{repo}"))
+	update_repo(qq("cmp_sim_@{repo}"), qq("/omics/groups/OE0246/internal/guz/simplifyGO_test/compare_similarity/@{repo}"))
 }
+
 
 ################# test partition methods ###########
-create_repo("test_partition_methods")
-update_repo("test_partition_methods", "/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/test_partition_methods")
+create_repo("test_partition_methods", "/omics/groups/OE0246/internal/guz/simplifyGO_test/test_partition_methods")
+update_repo("test_partition_methods", "/omics/groups/OE0246/internal/guz/simplifyGO_test/test_partition_methods")
 
 
-create_repo("compare_similarity", "/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/compare_similarity",
-	ignore = sub_dirs("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/compare_similarity", pattern = "EBI|random|rds"))
-update_repo("compare_similarity", "/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/compare_similarity")
+create_repo("compare_similarity", "/omics/groups/OE0246/internal/guz/simplifyGO_test/compare_similarity",
+	ignore = sub_dirs("/omics/groups/OE0246/internal/guz/simplifyGO_test/compare_similarity", pattern = "EBI|random|rds"))
+update_repo("compare_similarity", "/omics/groups/OE0246/internal/guz/simplifyGO_test/compare_similarity")
 
 
-create_repo("examples", "/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/examples",
-	ignore = sub_dirs("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/examples"))
-update_repo("examples", "/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/examples")
+create_repo("examples", "/omics/groups/OE0246/internal/guz/simplifyGO_test/examples",
+	ignore = sub_dirs("/omics/groups/OE0246/internal/guz/simplifyGO_test/examples"))
+update_repo("examples", "/omics/groups/OE0246/internal/guz/simplifyGO_test/examples")
+

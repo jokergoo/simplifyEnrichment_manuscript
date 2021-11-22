@@ -1,24 +1,24 @@
 library(GetoptLong)
 
-setwd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/examples")
+setwd("/omics/groups/OE0246/internal/guz/simplifyGO_test/examples")
 
 
 library(simplifyEnrichment)
 library(bsub)
-bsub_opt$temp_dir = "/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/bsub_temp"
+bsub_opt$temp_dir = "/omics/groups/OE0246/internal/guz/simplifyGO_test/bsub_temp"
 
 ######################## random GO ###################
 
-bsub_opt$enforce = FALSE
+bsub_opt$enforce = TRUE
 for(ont in c("BP", "MF", "CC")) {
 	for(i in 1:100) {
 	seed = round(runif(1)*2^30)
-	bsub_chunk(name = qq("random_@{ont}_@{i}"), variables = c("i", "ont", "seed"), memory = 3, hour = ifelse(ont == "BP", 3, 0.5),
+	bsub_chunk(name = qq("random_@{ont}_@{i}"), variables = c("i", "ont", "seed"), memory = 10, hour = ifelse(ont == "BP", 3, 0.5),
 	{
 
 		library(GetoptLong)
 
-	    setwd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/examples")
+	    setwd("/omics/groups/OE0246/internal/guz/simplifyGO_test/examples")
 
 		library(simplifyEnrichment)
 
@@ -95,7 +95,7 @@ for(ont in c("BP", "MF", "CC")) {
 	}
 }
 
-setwd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/examples")
+setwd("/omics/groups/OE0246/internal/guz/simplifyGO_test/examples")
 
 ## generate HTML page for every dataset
 for(ont in c("BP", "MF", "CC")) {
@@ -195,5 +195,5 @@ for(ont in c("CC", "MF")) {
 }
 
 
-servr::httd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/")
+servr::httd("/omics/groups/OE0246/internal/guz/simplifyGO_test/")
 

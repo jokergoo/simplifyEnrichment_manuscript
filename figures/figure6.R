@@ -1,4 +1,4 @@
-setwd("~/manuscript/simplifyEnrichment")
+setwd("~/manuscript/simplifyEnrichment/figures")
 
 library(ComplexHeatmap)
 library(cowplot)
@@ -51,11 +51,13 @@ p3 = grid.grabExpr(draw(Heatmap(con_mat, show_heatmap_legend = FALSE,
 	padding = unit(c(4, 4, 0, 1), "mm")))
 
 
-clt1 = readRDS("clt_random_BP_41.rds")
+clt1 = readRDS("clt_random_BP_10.rds")
 p4 = grid.grabExpr(ht_clusters(clt1[[1]], clt1[[2]]$binary_cut,  draw_word_cloud = FALSE, 
+	col = colorRamp2(c(0, quantile(clt1[[1]], 0.95)), c("white", "red")),
 	column_title = "D) semantic similarity", show_heatmap_legend = FALSE, padding = unit(c(10, 4, 0, 1), "mm")))
-clt2 = readRDS("clt_random_BP_kappa_41.rds")
+clt2 = readRDS("clt_random_BP_kappa_10.rds")
 p5 = grid.grabExpr(ht_clusters(clt2[[1]], clt2[[2]]$binary_cut,  draw_word_cloud = FALSE, 
+	col = colorRamp2(c(0, quantile(clt2[[1]], 0.95)), c("white", "red")),
 	column_title = "E) kappa similarity", show_heatmap_legend = FALSE, padding = unit(c(10, 4, 0, 1), "mm")))
 
 
@@ -113,11 +115,13 @@ p8 = grid.grabExpr(draw(Heatmap(con_mat, show_heatmap_legend = FALSE,
 
 
 ht_opt$TITLE_PADDING = unit(2.5, "mm")
-clt1 = readRDS("clt_E-GEOD-11324_A-AFFY-44_g1_g4_GO_BP.rds")
+clt1 = readRDS("clt_E-GEOD-10718_A-AFFY-44_g4_g3_GO_BP.rds")
 p9 = grid.grabExpr(ht_clusters(clt1[[1]], clt1[[2]]$binary_cut,  draw_word_cloud = FALSE, 
+	col = colorRamp2(c(0, quantile(clt1[[1]], 0.95)), c("white", "red")),
 	column_title = "I) semantic similarity", show_heatmap_legend = FALSE, padding = unit(c(10, 4, 0, 1), "mm")))
-clt2 = readRDS("clt_E-GEOD-11324_A-AFFY-44_g1_g4_GO_BP_kappa.rds")
+clt2 = readRDS("clt_E-GEOD-10718_A-AFFY-44_g4_g3_GO_BP_kappa.rds")
 p10 = grid.grabExpr(ht_clusters(clt2[[1]], clt2[[2]]$binary_cut,  draw_word_cloud = FALSE, 
+	col = colorRamp2(c(0, quantile(clt2[[1]], 0.95)), c("white", "red")),
 	column_title = "J) kappa similarity", show_heatmap_legend = FALSE, padding = unit(c(10, 4, 0, 1), "mm")))
 
 

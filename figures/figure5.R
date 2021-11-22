@@ -1,4 +1,4 @@
-setwd("~/manuscript/simplifyEnrichment")
+setwd("~/manuscript/simplifyEnrichment/figures")
 
 lt_foo = readRDS("random_BP_results.rds");
 diff_score_df = lt_foo$diff_score_df

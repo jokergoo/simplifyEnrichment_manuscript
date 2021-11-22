@@ -1,14 +1,14 @@
 
 library(GetoptLong)
 
-setwd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/examples")
+setwd("/omics/groups/OE0246/internal/guz/simplifyGO_test/examples")
 
 # library(devtools)
 # install_github("jokergoo/simplifyEnrichment")
 
 library(simplifyEnrichment)
 library(bsub)
-bsub_opt$temp_dir = "/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/bsub_temp"
+bsub_opt$temp_dir = "/omics/groups/OE0246/internal/guz/simplifyGO_test/bsub_temp"
 
 ###################  EBI_Expression_Atlas  ########################
 
@@ -22,11 +22,11 @@ submit_EBI_Expression_Atlas = function(sim, onto) {
 	for(i in seq_len(n)) {
 		# if(i > 10) break
 		mat = as.matrix(sim[[i]])
-		bsub_chunk(name = qq("Expression_Atlas_@{onto}_@{i}"), variables = c("i", "mat", "n", "nm", "onto"), hour = ifelse(nrow(mat) < 500, 0.8, 4), memory = 3,
+		bsub_chunk(name = qq("Expression_Atlas_@{onto}_@{i}_@{nm[i]}"), variables = c("i", "mat", "n", "nm", "onto"), hour = ifelse(nrow(mat) < 500, 0.8, 4), memory = 10,
 		{	
 			library(GetoptLong)
 
-   			setwd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/examples")
+   			setwd("/omics/groups/OE0246/internal/guz/simplifyGO_test/examples")
 
 			library(simplifyEnrichment)
 			
@@ -44,6 +44,7 @@ submit_EBI_Expression_Atlas = function(sim, onto) {
 			dir.create(qq("EBI_Expression_Atlas_@{onto}/rds/"), showWarnings = FALSE, recursive = TRUE)
 
 			saveRDS(list(mat, clt), file = qq("EBI_Expression_Atlas_@{onto}/rds/clt_@{nm[i]}_@{onto}.rds"))
+			qqcat("rds saved to @{getwd()}/EBI_Expression_Atlas_@{onto}/rds/clt_@{nm[i]}_@{onto}.rds\n")
 
 			jpeg(qq("EBI_Expression_Atlas_@{onto}/image/term_heatmap_@{nm[i]}_@{onto}.jpg"), width = 1800, height = 1800/5*2)
 			cmp_make_plot(mat, clt, plot_type = "heatmap", nrow = 2)
@@ -64,7 +65,9 @@ submit_EBI_Expression_Atlas = function(sim, onto) {
 
 bsub_opt$enforce = FALSE
 
-lt2 = readRDS("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/rds/lt2_sim_all.rds")
+lt2 = readRDS("/omics/groups/OE0246/internal/guz/simplifyGO_test/rds/lt2_sim_all.rds")
+
+sapply(lt2, length)
 
 submit_EBI_Expression_Atlas(lt2$GO_BP_sim, "GO_BP")
 submit_EBI_Expression_Atlas(lt2$GO_BP_sim_kappa, "GO_BP_kappa")
@@ -85,7 +88,7 @@ submit_EBI_Expression_Atlas(lt2$Reactome_sim_jaccard, "Reactome_jaccard")
 submit_EBI_Expression_Atlas(lt2$Reactome_sim_dice, "Reactome_dice")
 submit_EBI_Expression_Atlas(lt2$Reactome_sim_overlap, "Reactome_overlap")
 
-for(sm in c("C2_CGP", "C3_MIR_Legacy", "C3_TFT_Legacy", "C3_GTRD", "C3_MIRDB", "C4_CM", "C4_CGN", "C7_")) {
+for(sm in c("C2_CGP", "C3_MIR_Legacy", "C3_TFT_Legacy", "C3_GTRD", "C3_MIRDB", "C4_CM", "C4_CGN", "C7_IMMUNESIGDB")) {
 	submit_EBI_Expression_Atlas(lt2[[qq("MsigDB_@{sm}_sim_kappa")]], qq("MsigDB_@{sm}_kappa"))
 	submit_EBI_Expression_Atlas(lt2[[qq("MsigDB_@{sm}_sim_jaccard")]], qq("MsigDB_@{sm}_jaccard"))
 	submit_EBI_Expression_Atlas(lt2[[qq("MsigDB_@{sm}_sim_dice")]], qq("MsigDB_@{sm}_dice"))
@@ -176,7 +179,7 @@ generate_EBI_Expression_Atlas_html(lt2$GO_BP_sim, "GO_BP")
 generate_EBI_Expression_Atlas_html(lt2$GO_BP_sim_kappa, "GO_BP_kappa")
 generate_EBI_Expression_Atlas_html(lt2$GO_BP_sim_jaccard, "GO_BP_jaccard")
 generate_EBI_Expression_Atlas_html(lt2$GO_BP_sim_dice, "GO_BP_dice")
-generate_EBI_Expression_Atlas_html(lt2$GO_sim_overlap, "GO_BP_overlap")
+generate_EBI_Expression_Atlas_html(lt2$GO_BP_sim_overlap, "GO_BP_overlap")
 generate_EBI_Expression_Atlas_html(lt2$DO_sim, "DO")
 generate_EBI_Expression_Atlas_html(lt2$DO_sim_kappa, "DO_kappa")
 generate_EBI_Expression_Atlas_html(lt2$DO_sim_jaccard, "DO_jaccard")
@@ -191,14 +194,14 @@ generate_EBI_Expression_Atlas_html(lt2$Reactome_sim_jaccard, "Reactome_jaccard")
 generate_EBI_Expression_Atlas_html(lt2$Reactome_sim_dice, "Reactome_dice")
 generate_EBI_Expression_Atlas_html(lt2$Reactome_sim_overlap, "Reactome_overlap")
 
-for(sm in c("C2_CGP", "C3_MIR_Legacy", "C3_TFT_Legacy", "C3_GTRD", "C3_MIRDB", "C4_CM", "C4_CGN", "C7_")) {
+for(sm in c("C2_CGP", "C3_MIR_Legacy", "C3_TFT_Legacy", "C3_GTRD", "C3_MIRDB", "C4_CM", "C4_CGN", "C7_IMMUNESIGDB")) {
 	generate_EBI_Expression_Atlas_html(lt2[[qq("MsigDB_@{sm}_sim_kappa")]], qq("MsigDB_@{sm}_kappa"))
 	generate_EBI_Expression_Atlas_html(lt2[[qq("MsigDB_@{sm}_sim_jaccard")]], qq("MsigDB_@{sm}_jaccard"))
 	generate_EBI_Expression_Atlas_html(lt2[[qq("MsigDB_@{sm}_sim_dice")]], qq("MsigDB_@{sm}_dice"))
 	generate_EBI_Expression_Atlas_html(lt2[[qq("MsigDB_@{sm}_sim_overlap")]], qq("MsigDB_@{sm}_overlap"))
 }
 
-servr::httd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/")
+servr::httd("/omics/groups/OE0246/internal/guz/simplifyGO_test/")
 
 ######################### summarize #####################
 
@@ -347,9 +350,9 @@ summarize("EBI_Expression_Atlas_Reactome_dice/rds/clt_@{nm[i]}_Reactome_dice.rds
 summarize("EBI_Expression_Atlas_Reactome_overlap/rds/clt_@{nm[i]}_Reactome_overlap.rds", lt2$Reactome_sim_overlap, output = "EBI_Expression_Atlas_Reactome_overlap_results.rds", rerun = TRUE)
 
 
-for(sm in c("C2_CGP", "C3_MIR_Legacy", "C3_TFT_Legacy", "C3_GTRD", "C3_MIRDB", "C4_CM", "C4_CGN", "C7_")) {
+for(sm in c("C2_CGP", "C3_MIR_Legacy", "C3_TFT_Legacy", "C3_GTRD", "C3_MIRDB", "C4_CM", "C4_CGN", "C7_IMMUNESIGDB")) {
 	for(coef in c("kappa", "jaccard", "dice", "overlap")) {
-		bsub_chunk(name = qq("summarize_@{sm}_@{coef}"), hour = 10, memory = 20, variables = c("sm", "coef", "summarize"),
+		bsub_chunk(name = qq("summarize_@{sm}_@{coef}"), hour = 10, memory = 30, variables = c("sm", "coef", "summarize"),
 		{	
 			library(GetoptLong)
 			library(ggplot2)
@@ -359,8 +362,8 @@ for(sm in c("C2_CGP", "C3_MIR_Legacy", "C3_TFT_Legacy", "C3_GTRD", "C3_MIRDB", "
 			library(circlize)
 			library(simplifyEnrichment)
 
-			setwd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/examples")
-			lt2 = readRDS("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/rds/lt2_sim_all.rds")
+			setwd("/omics/groups/OE0246/internal/guz/simplifyGO_test/examples")
+			lt2 = readRDS("/omics/groups/OE0246/internal/guz/simplifyGO_test/rds/lt2_sim_all.rds")
 			
 			summarize(qq("EBI_Expression_Atlas_MsigDB_`sm`_@{coef}/rds/clt_@{nm[i]}_MsigDB_`sm`_`coef`.rds", code.pattern = "`CODE`"), 
 				lt2[[qq("MsigDB_@{sm}_sim_@{coef}")]], output = qq("EBI_Expression_Atlas_MsigDB_@{sm}_@{coef}_results.rds"), rerun = TRUE)

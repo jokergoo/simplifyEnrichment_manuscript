@@ -1,55 +1,55 @@
 
 library(GetoptLong)
 
-setwd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/test_partition_methods")
+setwd("/omics/groups/OE0246/internal/guz/simplifyGO_test/test_partition_methods")
 
 library(simplifyEnrichment)
 library(bsub)
-bsub_opt$temp_dir = "/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/bsub_temp"
+bsub_opt$temp_dir = "/omics/groups/OE0246/internal/guz/simplifyGO_test/bsub_temp"
 
 ######################## random GO ###################
 
 bsub_opt$enforce = TRUE
 
 for(i in 1:100) {
-seed = round(runif(1)*2^30)	
-bsub_chunk(name = qq("test_partition_methods_@{i}"), variables = c("i", "seed"), memory = 3, hour = 0.8,
-{
+	seed = round(runif(1)*2^30)	
+	bsub_chunk(name = qq("test_partition_methods_@{i}"), variables = c("i", "seed"), memory = 3, hour = 0.8,
+	{
 
-	library(GetoptLong)
+		library(GetoptLong)
 
-    setwd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/test_partition_methods")
+	    setwd("/omics/groups/OE0246/internal/guz/simplifyGO_test/test_partition_methods")
 
-	library(simplifyEnrichment)
+		library(simplifyEnrichment)
 
-	set.seed(seed)
-	qqcat("random seed: @{seed}\n")
+		set.seed(seed)
+		qqcat("random seed: @{seed}\n")
 
-	remove_clustering_methods(all_clustering_methods())
-	register_clustering_methods(
-		partition_by_pam = function(mat, ...) binary_cut(mat, partition_fun = partition_by_pam),
-		partition_by_kmeanspp = function(mat, ...) binary_cut(mat, partition_fun = partition_by_kmeanspp),
-		partition_by_hclust = function(mat, ...) binary_cut(mat, partition_fun = partition_by_hclust)
-	)
+		remove_clustering_methods(all_clustering_methods())
+		register_clustering_methods(
+			partition_by_pam = function(mat, ...) binary_cut(mat, partition_fun = partition_by_pam),
+			partition_by_kmeanspp = function(mat, ...) binary_cut(mat, partition_fun = partition_by_kmeanspp),
+			partition_by_hclust = function(mat, ...) binary_cut(mat, partition_fun = partition_by_hclust)
+		)
 
-	qqcat("====== random @{i} ========\n")
-	go_id = random_GO(500)
-	mat = GO_similarity(go_id)
+		qqcat("====== random @{i} ========\n")
+		go_id = random_GO(500)
+		mat = GO_similarity(go_id)
 
-	clt = cmp_make_clusters(mat, method = all_clustering_methods())
+		clt = cmp_make_clusters(mat, method = all_clustering_methods())
 
-	jpeg(qq("image/clt_test_partition_methods_@{i}.jpg"), width = 1200, height = 300)
-	cmp_make_plot(mat, clt, nrow = 1, plot_type = "heatmap")
-	dev.off()
+		jpeg(qq("image/clt_test_partition_methods_@{i}.jpg"), width = 1200, height = 300)
+		cmp_make_plot(mat, clt, nrow = 1, plot_type = "heatmap")
+		dev.off()
 
-	png(qq("image/clt_test_partition_methods_@{i}_barplot.png"), width = 800*2, height = 600*2, res = 72*2)
-	cmp_make_plot(mat, clt)
-	dev.off()
+		png(qq("image/clt_test_partition_methods_@{i}_barplot.png"), width = 800*2, height = 600*2, res = 72*2)
+		cmp_make_plot(mat, clt)
+		dev.off()
 
-	saveRDS(list(mat, clt, seed), file = qq("rds/clt_test_partition_methods_@{i}.rds"))
+		saveRDS(list(mat, clt, seed), file = qq("rds/clt_test_partition_methods_@{i}.rds"))
 
-	cat("done.\n")
-})
+		cat("done.\n")
+	})
 }
 
 
@@ -60,7 +60,7 @@ for(i in 1:100) {
 }
 
 
-servr::httd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/")
+servr::httd("/omics/groups/OE0246/internal/guz/simplifyGO_test/")
 
 remove_clustering_methods(all_clustering_methods())
 register_clustering_methods(

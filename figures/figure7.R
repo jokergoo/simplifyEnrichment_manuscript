@@ -1,4 +1,4 @@
-setwd("~/manuscript/simplifyEnrichment")
+setwd("~/manuscript/simplifyEnrichment/figures")
 
 library(cola)
 library(ComplexHeatmap)
@@ -16,7 +16,7 @@ cl[cl == 1] = 4; cl[cl == 2] = 1; cl[cl == 4] = 2
 m = get_matrix(res)[df$which_row, ]
 m = t(scale(t(m)))
 
-ht = Heatmap(m, name = "z-score",
+ht = Heatmap(m, name = "Scaled\nexpression",
 	col = colorRamp2(c(-2, 0, 2), c("green", "white", "red")),
 	top_annotation = HeatmapAnnotation(
 		cola_class = cl,
@@ -63,11 +63,11 @@ p2 = grid.grabExpr(
 	simplifyGO(sim_mat, ht_list = ht_fdr, word_cloud_grob_param = list(max_width = 80), 
 		verbose = FALSE, min_term = round(nrow(sim_mat)*0.01), control = list(partition_fun = partition_by_kmeanspp),
 		column_title = qq("B) @{nrow(sim_mat)} GO terms clustered by 'binary cut'")
-	), width = 14*2/3, height = 6)
+	), width = 14*2/3, height = 6.5)
 
 library(cowplot)
 
-pdf("figure7.pdf", width = 14, height = 6)
-plot_grid(p1, p2, nrow = 1, rel_widths = c(1, 2))
+pdf("figure7.pdf", width = 14, height = 6.5)
+print(plot_grid(p1, p2, nrow = 1, rel_widths = c(1, 2)))
 dev.off()
 

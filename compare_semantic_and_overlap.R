@@ -6,7 +6,7 @@ library(simplifyEnrichment)
 library(circlize)
 library(cowplot)
 
-setwd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/compare_similarity")
+setwd("/omics/groups/OE0246/internal/guz/simplifyGO_test/compare_similarity")
 
 con_mat_list = list()
 n_set_list = list()
@@ -159,6 +159,8 @@ p3 = grid.grabExpr(draw(ht, heatmap_legend_list = list(
 plot_grid(p1, p2, p3, nrow = 1, rel_widths = c(1, 1, 1.4))
 dev.off()
 
+library(reshape2)
+
 png(qq("random_BP_compare_similarity_ncluster_barplot.png"), width = 1000*2, height = 200*2, res = 72*2)
 df = do.call("rbind", n_set_list)
 p = ggplot(melt(df), aes(x = value, fill = Var2)) + geom_histogram() + facet_wrap( ~ Var2, nrow = 1) +
@@ -213,7 +215,7 @@ writeLines(qq("
 
 # =================================================
 
-lt_2 = readRDS("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/rds/lt2_sim_all.rds")
+lt_2 = readRDS("/omics/groups/OE0246/internal/guz/simplifyGO_test/rds/lt2_sim_all.rds")
 
 compare = function(ont) {
 	sim = lt_2[[qq("@{ont}_sim_jaccard")]]
@@ -239,6 +241,31 @@ compare = function(ont) {
 		mat3 = lt3[[1]]
 		mat4 = lt4[[1]]
 		mat5 = lt5[[1]]
+
+		# semantic and overlap may have different set of GO
+		if(grepl("GO|DO", ont)) {
+			cn = intersect(rownames(mat1), rownames(mat2))
+			
+			l = rownames(mat1) %in% cn
+			mat1 = mat1[l, l, drop = FALSE]
+			lt1[[2]] = lt1[[2]][l, ]
+
+			l = rownames(mat2) %in% cn
+			mat2 = mat2[l, l, drop = FALSE]
+			lt2[[2]] = lt2[[2]][l, ]
+
+			l = rownames(mat3) %in% cn
+			mat3 = mat3[l, l, drop = FALSE]
+			lt3[[2]] = lt3[[2]][l, ]
+
+			l = rownames(mat4) %in% cn
+			mat4 = mat4[l, l, drop = FALSE]
+			lt4[[2]] = lt4[[2]][l, ]
+
+			l = rownames(mat5) %in% cn
+			mat5 = mat5[l, l, drop = FALSE]
+			lt5[[2]] = lt5[[2]][l, ]
+		}
 
 		if(grepl("GO|DO", ont)) {
 			df = rbind(data.frame(x = mat1[upper.tri(mat1)], cate = "semantic"),
@@ -451,10 +478,10 @@ compare = function(ont) {
 }
 
 library(bsub)
-bsub_opt$temp_dir = "/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/bsub_temp"
+bsub_opt$temp_dir = "/omics/groups/OE0246/internal/guz/simplifyGO_test/bsub_temp"
 
 for(ont in c("GO_BP", "DO", "KEGG", "Reactome", "MsigDB_C2_CGP", "MsigDB_C3_GTRD", "MsigDB_C3_MIR_Legacy", 
-	"MsigDB_C3_MIRDB", "MsigDB_C3_TFT_Legacy", "MsigDB_C4_CGN", "MsigDB_C4_CM", "MsigDB_C7_")) {
+	"MsigDB_C3_MIRDB", "MsigDB_C3_TFT_Legacy", "MsigDB_C4_CGN", "MsigDB_C4_CM", "MsigDB_C7_IMMUNESIGDB")) {
 	bsub_chunk(name = qq("cmp_sim_@{ont}"), hour = 10, memory = 22, variables = c("ont", "compare"),
 	{	
 		library(GetoptLong)
@@ -463,9 +490,10 @@ for(ont in c("GO_BP", "DO", "KEGG", "Reactome", "MsigDB_C2_CGP", "MsigDB_C3_GTRD
 		library(simplifyEnrichment)
 		library(circlize)
 		library(cowplot)
+		library(reshape2)
 
-		setwd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/compare_similarity")
-		lt_2 = readRDS("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/rds/lt2_sim_all.rds")
+		setwd("/omics/groups/OE0246/internal/guz/simplifyGO_test/compare_similarity")
+		lt_2 = readRDS("/omics/groups/OE0246/internal/guz/simplifyGO_test/rds/lt2_sim_all.rds")
 		compare(ont)
 	})
 }
@@ -481,7 +509,7 @@ compare("MsigDB_C3_MIRDB")
 compare("MsigDB_C3_TFT_Legacy")
 compare("MsigDB_C4_CGN")
 compare("MsigDB_C4_CM")
-compare("MsigDB_C7_")
+compare("MsigDB_C7_IMMUNESIGDB")
 
 #######
 writeLines(qq("
@@ -508,12 +536,12 @@ writeLines(qq("
 <tr><td><a href='EBI_Expression_Atlas_MsigDB_C3_TFT_Legacy_compare_similarity.html'>Compare similarity measures - EBI_Expression_Atlas_MsigDB_C3_TFT_Legacy</a></td><td></td><td>x</td><td>x</td><td>x</td><td>x</td></tr>
 <tr><td><a href='EBI_Expression_Atlas_MsigDB_C4_CGN_compare_similarity.html'>Compare similarity measures - EBI_Expression_Atlas_MsigDB_C4_CGN</a></td><td></td><td>x</td><td>x</td><td>x</td><td>x</td></tr>
 <tr><td><a href='EBI_Expression_Atlas_MsigDB_C4_CM_compare_similarity.html'>Compare similarity measures - EBI_Expression_Atlas_MsigDB_C4_CM</a></td><td></td><td>x</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td><a href='EBI_Expression_Atlas_MsigDB_C7__compare_similarity.html'>Compare similarity measures - EBI_Expression_Atlas_MsigDB_C7</a></td><td></td><td>x</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td><a href='EBI_Expression_Atlas_MsigDB_C7_IMMUNESIGDBcompare_similarity.html'>Compare similarity measures - EBI_Expression_Atlas_MsigDB_C7_IMMUNESIGDB</a></td><td></td><td>x</td><td>x</td><td>x</td><td>x</td></tr>
 </table>
 </body>
 </html>
 "), con = "compare_similarity.html")
 
 
-servr::httd("/icgc/dkfzlsdf/analysis/B080/guz/simplifyGO_test/")
+servr::httd("/omics/groups/OE0246/internal/guz/simplifyGO_test/")
 
